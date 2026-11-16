@@ -1,12 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System;
+﻿using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
-using System.Linq;
-
 using System.Threading.Tasks;
 using MusicDataModels;
-using System.Threading;
 using MusicDataAccess;
 
 namespace MusicServiceAPI.Controllers
@@ -233,46 +228,46 @@ namespace MusicServiceAPI.Controllers
 
         // GET: /MusicInformation/
         // GET: /MusicInformation/GetSuggestedSongById
-        //this returns a single suggested song
-        // [HttpGet("/GetSuggestedSongById/{id}", Name = nameof(GetSuggestedSongById))] // named route
-        // [ProducesResponseType(200, Type = typeof(SongSuggestion))]
-        // [ProducesResponseType(404)]
-        // public async Task<IActionResult> GetSuggestedSongById(int id)
-        // {
-        //     SongSuggestion s = await repo.GetSongSuggestionById(id);
-        //     if (s == null)
-        //     {
-        //         return NotFound(); // 404 Resource not found
-        //     }
-        //     return Ok(s);   // 200 OK with song in body
-        // }
+        // this returns a single suggested song
+        [HttpGet("/GetSuggestedSongById/{id}", Name = nameof(GetSuggestedSongById))] // named route
+        [ProducesResponseType(200, Type = typeof(SuggestedSong))]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> GetSuggestedSongById(int id)
+        {
+            SuggestedSong s = await repo.GetSongSuggestionById(id);
+            if (s == null)
+            {
+                return NotFound(); // 404 Resource not found
+            }
+            return Ok(s);   // 200 OK with song in body
+        }
 
-        // //// POST:  /MusicInformation/AddSongSuggestion
-        // //// BODY:  SongSuggestion (JSON, XML)
-        // //// this inserts a song suggestion
-        // [HttpPost("/AddSongSuggestion", Name = nameof(AddSongSuggestion))]
-        // [ProducesResponseType(201, Type = typeof(SongSuggestion))]
-        // [ProducesResponseType(400)]
+        //// POST:  /MusicInformation/AddSuggestedSong
+        //// BODY:  SuggestedSong (JSON, XML)
+        //// this inserts a song suggestion
+        [HttpPost("/AddSuggestedSong", Name = nameof(AddSuggestedSong))]
+        [ProducesResponseType(201, Type = typeof(SuggestedSong))]
+        [ProducesResponseType(400)]
 
-        // public async Task<IActionResult> AddSongSuggestion([FromBody] SongSuggestion ss)
-        // {
-        //     if (ss == null)
-        //     {
-        //         return BadRequest(); // 400 Bad Request
-        //     }
+        public async Task<IActionResult> AddSuggestedSong([FromBody] SuggestedSong ss)
+        {
+            if (ss == null)
+            {
+                return BadRequest(); // 400 Bad Request
+            }
 
-        //     if (!ModelState.IsValid)
-        //     {
-        //         return BadRequest(ModelState); // 400 BadRequest
-        //     }
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState); // 400 BadRequest
+            }
 
-        //     SongSuggestion suggestedSong = await repo.AddSongSuggestion(ss);
+            SuggestedSong suggestedSong = await repo.AddSongSuggestion(ss);
 
-        //     return  // 201 Created
-        //        CreatedAtRoute(
-        //             routeName: nameof(GetSuggestedSongById),
-        //             routeValues: new { id = suggestedSong.SuggestedSongId },
-        //             value: suggestedSong);
-        // }
+            return  // 201 Created
+               CreatedAtRoute(
+                    routeName: nameof(GetSuggestedSongById),
+                    routeValues: new { id = suggestedSong.SuggestedSongId },
+                    value: suggestedSong);
+        }
     }
 }

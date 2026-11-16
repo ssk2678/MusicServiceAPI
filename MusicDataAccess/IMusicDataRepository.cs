@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using MusicDataAccess.Model;
+using MusicDataAccess.Models;
 using MusicDataModels;
 
 namespace MusicDataAccess
@@ -21,10 +18,10 @@ namespace MusicDataAccess
         //Task<bool> AddStatistic(Statistic s);
         Task<MusicArtist> UpdateArtist(Artist a);
         Task<MusicSong> UpdateSong(Song s);
-        //Task<IEnumerable<bool?>> DeleteSong(List<int> songIds);
-        //Task<IEnumerable<bool>?> DeleteArtist(int artistId);       
-        //Task<SongSuggestion> AddSongSuggestion(SongSuggestion ss);
-        //Task<SongSuggestion> GetSongSuggestionById(int songSuggestionID);
+        Task<IEnumerable<bool?>> DeleteSong(List<int> songIds);
+        Task<int> DeleteArtist(int artistId, bool noSongsLeft);       
+        Task<SuggestedSong> AddSongSuggestion(SuggestedSong ss);
+        Task<SuggestedSong> GetSongSuggestionById(int songSuggestionID);
 
     }
 }

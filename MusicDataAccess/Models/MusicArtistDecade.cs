@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 
-namespace MusicDataAccess.Model;
+namespace MusicDataAccess.Models;
 
 public partial class MusicArtistDecade
 {

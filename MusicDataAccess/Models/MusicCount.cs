@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace MusicDataAccess.Model;
+namespace MusicDataAccess.Models;
 
 public partial class MusicCount
 {
@@ -26,4 +26,6 @@ public partial class MusicCount
     public DateTime? DateAdded { get; set; }
 
     public DateTime? DateModified { get; set; }
+
+    public virtual ICollection<MusicLoadStatistic> MusicLoadStatistics { get; set; } = new List<MusicLoadStatistic>();
 }

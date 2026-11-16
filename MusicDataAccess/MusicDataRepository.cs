@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using MusicDataAccess.Model;
+using MusicDataAccess.Models;
 using MusicDataModels;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
@@ -290,127 +289,125 @@ namespace MusicDataAccess
 
         }
 
-        // public async Task<IEnumerable<bool?>> DeleteSong(List<int> songIds) //Need to consider - check if last song within decade and delete artist from MusicArtist table and/or check if no other decade for that artist and delete artist from Artist table?
-        // {
-        //     List<bool?> deleteResultList = new List<bool?>();
+        public async Task<IEnumerable<bool?>> DeleteSong(List<int> songIds) //Need to consider - check if last song within decade and delete artist from MusicArtist table and/or check if no other decade for that artist and delete artist from Artist table?
+        {
+            List<bool?> deleteResultList = new List<bool?>();
 
-        //     //delete any music statistic associated with song
-        //     IEnumerable<MusicClickStatistic> msStatisticList = db.MusicClickStatistics.Where(ms => songIds.Contains(ms.MusicClickStatSongId));
-        //     db.MusicClickStatistics.RemoveRange(msStatisticList);
+            //delete any music statistic associated with song
+            IEnumerable<MusicClickStatistic> msStatisticList = db.MusicClickStatistics.Where(ms => songIds.Contains(ms.MusicClickStatSongId));
+            db.MusicClickStatistics.RemoveRange(msStatisticList);
 
-        //     //get and delete song
-        //     List<MusicSong> msSongList = db.MusicSongs.Where(ms => songIds.Contains(ms.SongId)).ToList();
+            //get and delete song
+            List<MusicSong> msSongList = db.MusicSongs.Where(ms => songIds.Contains(ms.SongId)).ToList();
 
-        //     List<int?> artistIds = new();
-        //     foreach(MusicSong msSong in msSongList)
-        //     {
-        //         artistIds.Add(msSong.SongArtistId);
-        //     }
+            List<int?> artistIds = new();
+            foreach(MusicSong msSong in msSongList)
+            {
+                artistIds.Add(msSong.SongArtistId);
+            }
 
-        //     // remove from database
-        //     db.MusicSongs.RemoveRange(msSongList);
+            // remove from database
+            db.MusicSongs.RemoveRange(msSongList);
 
-        //     int affected = await db.SaveChangesAsync();
+            int affected = await db.SaveChangesAsync();
 
-        //     // delete the artist if that was his/her/their last song
-        //     foreach (int artistId in artistIds)
-        //     {
-        //         bool stillHasSongs = db.MusicSongs.Where(ms => ms.SongArtistId == artistId).Any();
+            // delete the artist if that was his/her/their last song
+            foreach (int artistId in artistIds)
+            {
+                bool stillHasSongs = db.MusicSongs.Where(ms => ms.SongArtistId == artistId).Any();
 
-        //         if (!stillHasSongs)
-        //         {
-        //             int deleteArtistTask = await DeleteArtist(artistId, true); //need to modify delete artist method to accomodate being called from here - no need to check song table
-        //         }
-        //     }
+                if (!stillHasSongs)
+                {
+                    int deleteArtistTask = await DeleteArtist(artistId, true); //need to modify delete artist method to accomodate being called from here - no need to check song table
+                }
+            }
 
-        //     if (affected == 1)
-        //     {
-        //         // remove from cache
-        //         songIds.ForEach(si =>
-        //         {
-        //             deleteResultList.Add(musicSongsCache.TryRemove(si, out MusicSong ms));
+            if (affected == 1) //?? Should this be >=
+            {
+                // remove from cache
+                songIds.ForEach(si =>
+                {
+                    deleteResultList.Add(musicSongsCache.TryRemove(si, out MusicSong ms));
 
-        //         });
-        //         return deleteResultList;
-        //     }
-        //     else
-        //     {
-        //         return null;
-        //     }
+                });
+                return deleteResultList;
+            }
+            else
+            {
+                return null;
+            }
            
-        // }
+        }
 
-        // public async Task<int> DeleteArtist(int artistId, bool noSongsLeft = false)
-        // {
-        //     if (!noSongsLeft)
-        //     {
-        //         // delete any music statistic associated with artist
-        //         IEnumerable<MusicClickStatistic> mstatList = db.MusicClickStatistics.Where(ms => ms.MusicClickStatArtistId == artistId);
-        //         db.MusicClickStatistics.RemoveRange(mstatList);
+        public async Task<int> DeleteArtist(int artistId, bool noSongsLeft = false)
+        {
+            if (!noSongsLeft)
+            {
+                // delete any music statistic associated with artist
+                IEnumerable<MusicClickStatistic> mstatList = db.MusicClickStatistics.Where(ms => ms.MusicClickStatArtistId == artistId);
+                db.MusicClickStatistics.RemoveRange(mstatList);
 
-        //         // delete any entries from the music song table associated with artist
-        //         IEnumerable<MusicSong> msList = db.MusicSongs.Where(ms => ms.SongArtistId == artistId);
-        //         db.MusicSongs.RemoveRange(msList);
-        //     }            
+                // delete any entries from the music song table associated with artist
+                IEnumerable<MusicSong> msList = db.MusicSongs.Where(ms => ms.SongArtistId == artistId);
+                db.MusicSongs.RemoveRange(msList);
+            }            
 
-        //     // delete artist from the artist table
-        //     MusicArtist ma = db.MusicArtists.Single(ma => ma.ArtistId == artistId);
-        //     db.MusicArtists.Remove(ma);
+            // delete artist from the artist table
+            MusicArtist ma = db.MusicArtists.Single(ma => ma.ArtistId == artistId);
+            db.MusicArtists.Remove(ma);
 
-        //     int affected = await db.SaveChangesAsync();
-        //     return affected;
+            int affected = await db.SaveChangesAsync();
+            return affected;
 
-        // }
+        }
 
-        // public async Task<SongSuggestion> AddSongSuggestion(SongSuggestion ss)
-        // {
-        //     MusicSongSuggestion newMusicSongSuggestion = new MusicSongSuggestion
-        //     {
-        //         SuggestedSongId = ss.SuggestedSongId,
-        //         SuggestedSongArtist = ss.SuggestedSongArtist,
-        //         SuggestedSongTitle = ss.SuggestedSongTitle,
-        //         SuggestedSongDecade = ss.SuggestedSongDecade
-        //     };
+        public async Task<SuggestedSong> AddSongSuggestion(MusicDataModels.SuggestedSong ss)
+        {
+            MusicDataAccess.Models.SongSuggestion newMusicSongSuggestion = new MusicDataAccess.Models.SongSuggestion
+            {
+                SuggestedSongId = ss.SuggestedSongId,
+                SuggestedSongArtist = ss.SuggestedSongArtist,
+                SuggestedSongTitle = ss.SuggestedSongTitle,
+                SuggestedSongDecade = ss.SuggestedSongDecade
+            };
 
-        //     // mark song as added in change tracking
-        //     EntityEntry<MusicSongSuggestion> added = await db.MusicSongSuggestions.AddAsync(newMusicSongSuggestion);
+            // mark song as added in change tracking
+            EntityEntry<MusicDataAccess.Models.SongSuggestion> added = await db.SongSuggestions.AddAsync(newMusicSongSuggestion);
 
-        //     int affected = await db.SaveChangesAsync();
+            int affected = await db.SaveChangesAsync();
 
-        //     if (affected >= 1)
-        //     {
-        //         // if the song is new, add it to cache, else
-        //         // call UpdateSongCache method
-        //         newMusicSongSuggestion.SuggestedSongId = added.Entity.SuggestedSongId;
+            if (affected >= 1)
+            {
+                // if the song is new, add it to cache, else
+                // call UpdateSongCache method
+                newMusicSongSuggestion.SuggestedSongId = added.Entity.SuggestedSongId;
                 
-        //         SongSuggestion newSongSuggestion = new SongSuggestion{ SuggestedSongId = newMusicSongSuggestion.SuggestedSongId, 
-        //                                                                SuggestedSongArtist = newMusicSongSuggestion.SuggestedSongArtist, 
-        //                                                                SuggestedSongDecade = newMusicSongSuggestion.SuggestedSongDecade, 
-        //                                                                SuggestedSongTitle = newMusicSongSuggestion.SuggestedSongTitle };
-        //         return newSongSuggestion;
+                SuggestedSong newSongSuggestion = new SuggestedSong{ SuggestedSongId = newMusicSongSuggestion.SuggestedSongId, 
+                                                                       SuggestedSongArtist = newMusicSongSuggestion.SuggestedSongArtist, 
+                                                                       SuggestedSongDecade = newMusicSongSuggestion.SuggestedSongDecade, 
+                                                                       SuggestedSongTitle = newMusicSongSuggestion.SuggestedSongTitle };
+                return newSongSuggestion;
 
-        //     }
-        //     else
-        //     {
-        //         return null;
-        //     }
+            }
+            else
+            {
+                return null;
+            }
 
-        // }
+        }
 
-        // public Task<SongSuggestion> GetSongSuggestionById(int songSuggestionID)
-        // {
-        //     Task<SongSuggestion> songSuggestion = Task.Run(() => db.MusicSongSuggestions.Where(mss => mss.SuggestedSongId == songSuggestionID).Select(ma => new SongSuggestion
-        //     {
-        //         SuggestedSongId = ma.SuggestedSongId,
-        //         SuggestedSongArtist = ma.SuggestedSongArtist,
-        //         SuggestedSongDecade = ma.SuggestedSongDecade,
-        //         SuggestedSongTitle = ma.SuggestedSongTitle
+        public Task<SuggestedSong> GetSongSuggestionById(int songSuggestionID)
+        {
+            Task<SuggestedSong> songSuggestion = Task.Run(() => db.SongSuggestions.Where(mss => mss.SuggestedSongId == songSuggestionID).Select(ma => new SuggestedSong
+            {
+                SuggestedSongId = ma.SuggestedSongId,
+                SuggestedSongArtist = ma.SuggestedSongArtist,
+                SuggestedSongDecade = ma.SuggestedSongDecade,
+                SuggestedSongTitle = ma.SuggestedSongTitle
 
-        //     }).Single());
+            }).Single());
 
-        //     return songSuggestion;
-        // }
-
-
+            return songSuggestion;
+        }
     }
 }
