@@ -368,7 +368,10 @@ namespace MusicDataAccess
                 SuggestedSongId = ss.SuggestedSongId,
                 SuggestedSongArtist = ss.SuggestedSongArtist,
                 SuggestedSongTitle = ss.SuggestedSongTitle,
-                SuggestedSongDecade = ss.SuggestedSongDecade
+                SuggestedSongDecade = ss.SuggestedSongDecade,
+                DateAdded = ss.DateAdded,
+                DateModified = ss.DateModified,
+                IsAdded = ss.IsAdded
             };
 
             // mark song as added in change tracking
@@ -382,10 +385,13 @@ namespace MusicDataAccess
                 // call UpdateSongCache method
                 newMusicSongSuggestion.SuggestedSongId = added.Entity.SuggestedSongId;
                 
-                SuggestedSong newSongSuggestion = new SuggestedSong{ SuggestedSongId = newMusicSongSuggestion.SuggestedSongId, 
-                                                                       SuggestedSongArtist = newMusicSongSuggestion.SuggestedSongArtist, 
-                                                                       SuggestedSongDecade = newMusicSongSuggestion.SuggestedSongDecade, 
-                                                                       SuggestedSongTitle = newMusicSongSuggestion.SuggestedSongTitle };
+                SuggestedSong newSongSuggestion = new SuggestedSong{    SuggestedSongId = newMusicSongSuggestion.SuggestedSongId, 
+                                                                        SuggestedSongArtist = newMusicSongSuggestion.SuggestedSongArtist, 
+                                                                        SuggestedSongDecade = newMusicSongSuggestion.SuggestedSongDecade, 
+                                                                        SuggestedSongTitle = newMusicSongSuggestion.SuggestedSongTitle,
+                                                                        DateAdded = ss.DateAdded,
+                                                                        DateModified = ss.DateModified,
+                                                                        IsAdded = ss.IsAdded };
                 return newSongSuggestion;
 
             }
