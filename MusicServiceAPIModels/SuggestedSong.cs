@@ -1,4 +1,5 @@
-﻿
+﻿using System;
+
 namespace MusicDataModels
 {
     public class SuggestedSong
@@ -7,6 +8,9 @@ namespace MusicDataModels
         public string SuggestedSongArtist { get; set; }
         public string SuggestedSongTitle { get; set; }
         public int SuggestedSongDecade { get; set; }
+        public DateTime DateAdded { get; set; }
+        public DateTime DateModified { get; set; }
+        public bool IsAdded { get; set; }
 
     }
 }
